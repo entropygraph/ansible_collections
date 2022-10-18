@@ -1,0 +1,12 @@
+namespace: entropygraph
+name: base
+version: 1.0.0
+authors:
+  - Tyler Smith <tyler@entropygra.ph>
+description: Base facilities for using ansible
+repository: github.com/entropygraph/ansible_collections
+license: ['MIT']
+readme: 'README.md'
+tags: ['ansible', 'base']
+dependencies: {}
+build_ignore: []

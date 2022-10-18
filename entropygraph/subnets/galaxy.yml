@@ -1,0 +1,12 @@
+namespace: entropygraph
+name: subnets
+version: 0.1.0
+authors:
+  - Tyler Smith <tyler@entropygra.ph>
+description: Tooling for Avalanche subnets.
+repository: github.com/entropygraph/ansible_collections
+license: ['MIT']
+readme: 'README.md'
+tags: ['avalanche', 'avax', 'subnets']
+dependencies: {}
+build_ignore: []

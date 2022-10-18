@@ -1,0 +1,21 @@
+---
+
+- name: Create filesystem on block device
+  community.general.filesystem:
+    fstype: "{{ disk_fs_type }}"
+    dev: "{{ disk_block_device }}"
+
+- name: Create mount path
+  ansible.builtin.file:
+    state: directory
+    path: "{{ disk_mount_path }}"
+    mode: '0700'
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+
+- name: Mount device
+  ansible.posix.mount:
+    state: present
+    fstype: "{{ disk_fs_type }}"
+    path: "{{ disk_mount_path }}"
+    src: "{{ disk_block_device }}"

@@ -1,0 +1,44 @@
+---
+
+- name: Gather facts
+  ansible.builtin.setup:
+
+- name: Create the new ansible user
+  register: new_ansible_user
+  ansible.builtin.user:
+    name: "{{ desired_ansible_user }}"
+    create_home: true
+    groups: sudo
+    state: present
+    shell: /bin/bash
+
+- name: Allow passwordless sudo
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: "/etc/sudoers.d/{{ desired_ansible_user }}"
+    owner: root
+    group: root
+    mode: 0440
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Create .ssh directory
+  ansible.builtin.file:
+    mode: 0700
+    state: directory
+    owner: "{{ desired_ansible_user }}"
+    group: "{{ desired_ansible_user }}"
+    path: "{{ new_ansible_user.home }}/.ssh"
+
+- name: Copy the authorized_keys from the intial user
+  ansible.builtin.copy:
+    remote_src: true
+    mode: preserve
+    src: "{{ ansible_env.HOME }}/.ssh/authorized_keys"
+    dest: "{{ new_ansible_user.home }}/.ssh/authorized_keys"
+
+- name: Change ownership and permissions of authorized_keys
+  ansible.builtin.file:
+    mode: 0644
+    path: "{{ new_ansible_user.home }}/.ssh/authorized_keys"
+    owner: "{{ desired_ansible_user }}"
+    group: "{{ desired_ansible_user }}"

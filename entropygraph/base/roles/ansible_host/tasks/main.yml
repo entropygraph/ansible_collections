@@ -1,0 +1,16 @@
+---
+
+- name: Note the current ansible user
+  ansible.builtin.set_fact:
+    desired_ansible_user: "{{ ansible_user }}"
+
+- name: Gather facts to test connectivity
+  ignore_unreachable: true
+  register: check_ansible_user_ssh
+  ansible.builtin.setup:
+
+- name: Configure host for ansible if we could not connect
+  vars:
+    - ansible_user: "{{ initial_user }}"
+  ansible.builtin.include_tasks: create_user.yml
+  when: "check_ansible_user_ssh.unreachable is defined and check_ansible_user_ssh.unreachable"

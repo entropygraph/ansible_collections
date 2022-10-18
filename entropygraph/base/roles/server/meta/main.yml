@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Tyler Smith <tyler@entropygra.ph>
+  description: Base server facilities
+  company: EntropyGraph
+  license: MIT
+  min_ansible_version: "2.1"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+dependencies:
+  - role: geerlingguy.security
+    vars:
+      security_fail2ban_enabled: false
+      security_autoupdate_mail_on_error: false

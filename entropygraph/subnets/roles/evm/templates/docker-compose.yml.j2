@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  avalanche:
+    image: "{{ docker_compose_avalanchego_image }}"
+    entrypoint: "/avalanchego/build/avalanchego"
+    command: [
+      "--log-level=info",
+      "--http-host=0.0.0.0",
+      "--db-dir=/var/lib/avalanche",
+      "--public-ip={{ hostvars[inventory_hostname]['ansible_host'] }}",
+      "--network-id={{ avalanche_primary_network_name }}",
+      "--whitelisted-subnets={{ avalanche_subnet_id }}",
+      "--api-admin-enabled=true"
+    ]
+    ports:
+      - "{{ avalanche_ports_http }}:9650"
+      - "{{ avalanche_ports_consensus }}:9651"
+    volumes:
+      - {{ avalanche_network_data_dir }}:/var/lib/avalanche
+      - {{ avalanche_staking_data_dir }}:/root/.avalanchego
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "2M"
+    ulimits:
+      nproc: 32768
+      nofile: 32768

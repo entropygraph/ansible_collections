@@ -1,0 +1,54 @@
+---
+
+- name: Create docker compose app directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ docker_compose_dir }}"
+    mode: '0700'
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+
+- name: Check for image
+  ansible.builtin.command: docker inspect --type=image {{ docker_compose_avalanchego_image }}
+  register: docker_image
+  failed_when: false
+  changed_when: false
+
+- name: Upload Docker image archive if image is missing
+  ansible.builtin.copy:
+    mode: '0600'
+    src: "docker_images/{{ docker_compose_avalanchego_image_archive }}"
+    dest: "{{ docker_compose_dir }}/{{ docker_compose_avalanchego_image_archive }}"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+  when: docker_image.rc != 0
+
+- name: Load image from archive
+  ansible.builtin.command: docker load --input {{ docker_compose_dir }}/{{ docker_compose_avalanchego_image_archive }}
+  when: docker_image.rc != 0
+
+- name: Check for image was loaded
+  ansible.builtin.command: docker inspect --type=image {{ docker_compose_avalanchego_image }}
+  when: docker_image.rc != 0
+
+- name: Cleanup image archive
+  ansible.builtin.file:
+    state: absent
+    path: "{{ docker_compose_dir }}/{{ docker_compose_avalanchego_image_archive }}"
+
+- name: Create docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ docker_compose_dir }}/docker-compose.yml"
+    mode: '0600'
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+
+- name: Start services
+  community.docker.docker_compose:
+    project_src: "{{ docker_compose_dir }}/"
+  register: docker_compose_output
+
+- name: Show output of services changes
+  ansible.builtin.debug:
+    var: docker_compose_output

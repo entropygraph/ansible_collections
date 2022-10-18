@@ -1,0 +1,23 @@
+---
+
+docker_user: ubuntu
+docker_group: ubuntu
+docker_compose_dir: "/home/{{ docker_user }}/avax"
+
+docker_compose_avalanchego_image_tag: v1.7.13-f275e9ab
+docker_compose_avalanchego_image: avaplatform/avalanchego:{{ docker_compose_avalanchego_image_tag }}
+docker_compose_avalanchego_image_archive: avaplatform_avalanchego:{{ docker_compose_avalanchego_image_tag }}.tar
+
+disk_fs_type: xfs
+disk_block_device: /dev/xvdf
+disk_mount_path: /mnt/persistent
+
+avalanche_primary_network_name: fuji
+avalanche_subnet_name: myfirstsubnet
+avalanche_subnet_id: empty
+
+avalanche_network_data_dir: "{{ disk_mount_path }}/network-data"
+avalanche_staking_data_dir: "{{ disk_mount_path }}/node-data"
+avalanche_chain_config_dir: "{{ disk_mount_path }}/node-data/configs/chains"
+avalanche_ports_http: 9650
+avalanche_ports_consensus: 9651

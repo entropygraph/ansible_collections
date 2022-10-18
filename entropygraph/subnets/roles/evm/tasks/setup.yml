@@ -1,0 +1,35 @@
+---
+
+##
+## Update packages
+##
+
+- name: Update and upgrade apt packages
+  ansible.builtin.apt:
+    upgrade: true
+    update_cache: true
+    cache_valid_time: 86400
+
+##
+## Configure firewall
+##
+
+- name: Allow SSH
+  community.general.ufw:
+    port: 22
+    proto: tcp
+    rule: allow
+
+- name: Allow daemon ports
+  community.general.ufw:
+    proto: tcp
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - "{{ avalanche_ports_http }}"
+    - "{{ avalanche_ports_consensus }}"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: allow
